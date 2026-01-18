@@ -19,26 +19,26 @@ Summary of my findings
 
 Exploitation
 
-1. I logged in as a normal user (wiener) and captured the authenticated request to `/accountDetails` in Burp Suite's history, which returned sensitive account data.
+1. I logged in as a normal user (wiener) and captured the authenticated request to `/accountDetails` in Burp Suite's history, which returned sensitive account data:
    
 <img width="1349" height="718" alt="image" src="https://github.com/user-attachments/assets/b26f7411-088c-447b-8436-f3422429306b" />
 
 <img width="1364" height="736" alt="image" src="https://github.com/user-attachments/assets/47dc1a39-ea68-44ae-87c4-cb4741a74281" />
 
 
-2. To test CORS, I forwarded the request to Repeater and added an `Origin` header with a random host. The response didn't reflect my origin, indicating no wildcard or reflection. Testing with null origin also failed.
+2. To test CORS, I forwarded the request to Repeater and added an `Origin` header with a random host. The response didn't reflect my origin, indicating no wildcard or reflection. Testing with null origin also failed:
    
 <img width="1363" height="729" alt="image" src="https://github.com/user-attachments/assets/2f6baf30-15ee-4665-9629-cbf31c5b81f4" />
 
 <img width="1365" height="739" alt="image" src="https://github.com/user-attachments/assets/c9adbc98-dc30-4157-b040-39b25121e711" />
 
 
-3. However, the site whitelisted a trusted subdomain served over plain HTTP.
+3. The application’s security was undermined by a CORS policy that whitelisted a trusted subdomain served over plain HTTP, creating a pathway for a protocol-downgrade attack:
    
 <img width="1359" height="727" alt="image" src="https://github.com/user-attachments/assets/f04cf0a6-db6a-4d41-9492-520dfa358727" />
 
    
-5. After exploring endpoints, I found the "Check stock" feature used HTTP and was vulnerable to XSS via the productId parameter, by intercepting the "Check stock" request on Burp Proxy, altering the parameter with an XSS script and fowarding it to the server.
+4. While exploring application endpoints, I identified a reflected XSS vulnerability within the 'Check stock' feature. The feature communicated via an insecure HTTP subdomain and failed to sanitize the productId parameter. Using Burp Proxy, I intercepted the request and injected a malicious script into the productId parameter, which was then successfully executed by the server:
    
 <img width="1328" height="695" alt="image" src="https://github.com/user-attachments/assets/a8068b3d-95a2-4a2c-9c82-6a7502f64711" />
 
@@ -47,7 +47,7 @@ Exploitation
 <img width="1366" height="725" alt="image" src="https://github.com/user-attachments/assets/dda10111-25a6-4f3f-afc5-6a3b37c1248a" />
 
 
-5. I crafted an XSS payload that fetched `/accountDetails` with credentials and exfiltrated the data. 
+5. I crafted an XSS payload that fetched `/accountDetails` with credentials:
 
 The payload I used:
 
@@ -64,7 +64,7 @@ The payload I used:
 </html>
 
 ```
-Hosting the payload on the exploit server and delivering it to the victim revealed the administrator's username, email, and API key within the access log panel, successfully completing the lab.
+6. Hosting the payload on the exploit server and delivering it to the victim revealed the administrator's username, email, and API key within the access log panel, successfully completing the lab:
 
 <img width="1237" height="656" alt="image" src="https://github.com/user-attachments/assets/6a7c67e6-483d-4289-b571-1eaaea8d0416" />
 
@@ -100,8 +100,10 @@ app.use(cors({ origin: (origin, cb) => cb(null, allowed.includes(origin)), crede
 
 Tools used
 
-- Burp Suite (Proxy, Repeater)
-- PortSwigger exploit server (payload hosting)
+- Proxy: [Burp Suite Community](https://portswigger.net)
+- Environment:[PortSwigger Academy](https://portswigger.net)
+- Documentation: [Flameshot](https://flameshot.org) (Screen capture & annotation)
+
 
 References
 - PortSwigger labs and documentation on CORS and XSS (https://portswigger.net/web-security/cors/lab-breaking-https-attack).
