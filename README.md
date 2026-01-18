@@ -32,6 +32,8 @@ Exploitation
 
 <img width="1365" height="739" alt="image" src="https://github.com/user-attachments/assets/c9adbc98-dc30-4157-b040-39b25121e711" />
 
+<p align="center"><i>Figure 1: Credentials captured in the access log. (Captured with Flameshot)</i></p>
+<br>
 
 3. The application’s security was undermined by a CORS policy that whitelisted a trusted subdomain served over plain HTTP, creating a pathway for a protocol-downgrade attack:
    
