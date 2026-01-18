@@ -24,7 +24,8 @@ Exploitation
 <img width="1349" height="718" alt="image" src="https://github.com/user-attachments/assets/b26f7411-088c-447b-8436-f3422429306b" />
 
 <img width="1364" height="736" alt="image" src="https://github.com/user-attachments/assets/47dc1a39-ea68-44ae-87c4-cb4741a74281" />
-
+<p align="center"></i></p>
+<br>
 
 2. To test CORS, I forwarded the request to Repeater and added an `Origin` header with a random host. The response didn't reflect my origin, indicating no wildcard or reflection. Testing with null origin also failed:
    
@@ -32,13 +33,14 @@ Exploitation
 
 <img width="1365" height="739" alt="image" src="https://github.com/user-attachments/assets/c9adbc98-dc30-4157-b040-39b25121e711" />
 
-<p align="center"><i>Figure 1: Credentials captured in the access log. (Captured with Flameshot)</i></p>
+<p align="center"></i></p>
 <br>
 
 3. The application’s security was undermined by a CORS policy that whitelisted a trusted subdomain served over plain HTTP, creating a pathway for a protocol-downgrade attack:
    
 <img width="1359" height="727" alt="image" src="https://github.com/user-attachments/assets/f04cf0a6-db6a-4d41-9492-520dfa358727" />
-
+<p align="center"></i></p>
+<br>
    
 4. While exploring application endpoints, I identified a reflected XSS vulnerability within the 'Check stock' feature. The feature communicated via an insecure HTTP subdomain and failed to sanitize the productId parameter. Using Burp Proxy, I intercepted the request and injected a malicious script into the productId parameter, which was then successfully executed by the server:
    
@@ -47,7 +49,8 @@ Exploitation
 <img width="1131" height="581" alt="image" src="https://github.com/user-attachments/assets/2f823ac4-166b-427a-8cbf-76d7a95c0915" />
 
 <img width="1366" height="725" alt="image" src="https://github.com/user-attachments/assets/dda10111-25a6-4f3f-afc5-6a3b37c1248a" />
-
+<p align="center"></i></p>
+<br>
 
 5. I crafted an XSS payload that fetched `/accountDetails` with credentials:
 
@@ -66,6 +69,9 @@ The payload I used:
 </html>
 
 ```
+<p align="center"></i></p>
+<br>
+
 6. Hosting the payload on the exploit server and delivering it to the victim revealed the administrator's username, email, and API key within the access log panel, successfully completing the lab:
 
 <img width="1237" height="656" alt="image" src="https://github.com/user-attachments/assets/6a7c67e6-483d-4289-b571-1eaaea8d0416" />
@@ -75,7 +81,8 @@ The payload I used:
 <img width="1360" height="163" alt="image" src="https://github.com/user-attachments/assets/62f45933-b4d9-4a42-8c5c-420e079178c7" />
 
 <img width="930" height="581" alt="image" src="https://github.com/user-attachments/assets/bbeba99a-04e9-4520-aac9-ab622fdc624c" />
-
+<p align="center"></i></p>
+<br>
 
 What I've learn't
 
