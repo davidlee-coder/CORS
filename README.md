@@ -1,23 +1,39 @@
 # **CORS Misconfiguration: Trusted Insecure Protocols**
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Security Research](https://img.shields.io/badge/Security-Research-blue.svg)](https://github.com/yourusername/web-shell-race-condition)
 
+# Table of Contents
+
+- [Overview](#overview)
+
+- [Background](#root-cause-analysis)
+- [Impact](#impact)
+- [Summary of my findings](#summary-of-my-findings)
+- [Exploitation](#exploitation)
+-[What I've learn't](#what-I've-learn't)
+- [Mitigation](#mitigation)
+- [Tools used](#tools-used)
+- [References](#references)
+  
+# Overview
 A CORS policy that trusts arbitrary subdomains and accepts `http://` origins can enable sensitive-data exfiltration (cookies, API keys) via cross-origin requests especially when combined with XSS or a network-level downgrade (MITM).
 
-**Background**
+# Background
 
 - Many apps use multiple subdomains (e.g., `stock.example.com`, `api.example.com`) and want selective CORS between them.
 - A common misconfiguration is reflecting `Origin` or allowing wildcard subdomains without enforcing HTTPS. When `Access-Control-Allow-Credentials: true` is present, a malicious script on an insecure origin can read authenticated responses.
 
-**Impact**
+# Impact
 
 - An attacker who can run JavaScript on a trusted origin (via XSS or injected content on an HTTP subdomain) can fetch and exfiltrate sensitive API responses.
 - Even without XSS, accepting `http://` origins enables network-level attacks (MITM) to inject scripts and capture data.
 
-**Summary of my findings**
+# Summary of my findings
 
 - I found an application that accepted a trusted subdomain served over HTTP. The app made authenticated requests to an endpoint (`GET /accountDetails`) that returned sensitive user data when CORS allowed the origin with credentials.
 - The `Check stock` feature on the HTTP subdomain was vulnerable to XSS. I hosted an exploit on the provided server and used it to exfiltrate account details and an API key.
 
-**Exploitation**
+# Exploitation
 
 1. I logged in as a normal user (wiener) and captured the authenticated request to `/accountDetails` in Burp Suite's history, which returned sensitive account data:
    
@@ -84,11 +100,11 @@ The payload I used:
 <p align="center"></i></p>
 <br><br><br>
 
-**What I've learn't**
+# What I've learn't
 
 This lab highlighted the danger of protocol agnostic trust. Trusting *.example.com regardless of whether it uses HTTP or HTTPS is a common misconfiguration that allows for protocol downgradde attacks.
 
-**Mitigations**
+# Mitigations
 
 - Explicitly whitelist origins: do not reflect `Origin` or permit broad wildcards. Use a strict allowlist such as `Access-Control-Allow-Origin: https://stock.example.com`.
 
@@ -107,14 +123,14 @@ const allowed = ['https://stock.example.com'];
 app.use(cors({ origin: (origin, cb) => cb(null, allowed.includes(origin)), credentials: true }));
 ```
 
-**Tools used**
+# Tools used
 
 - Proxy: [Burp Suite Community](https://portswigger.net)
 - Environment:[PortSwigger Academy](https://portswigger.net)
 - Documentation: [Flameshot](https://flameshot.org) (Screen capture & annotation)
 
 
-**References**
+# References
 
 - PortSwigger labs and documentation on CORS and XSS (https://portswigger.net/web-security/cors/lab-breaking-https-attack).
 
