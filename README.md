@@ -18,6 +18,9 @@
 # Overview
 A CORS policy that trusts arbitrary subdomains and accepts `http://` origins can enable sensitive-data exfiltration (cookies, API keys) via cross-origin requests especially when combined with XSS or a network-level downgrade (MITM).
 
+# My "Aha" Moment
+The real lightbulb moment was realizing the vulnerability wasn't just reflected origin, it was that the server didn't care about the protocols `http vs https` when reflecting the origin. It blindly trusted any scheme as long as the domain matched. I had been focused on subdomain tricks and null origins the usual CORS suspects that I overlooked the simplest thing, modern browsers allow http origins to read https responses if the server permits it via CORS.
+
 # Background
 
 - Many apps use multiple subdomains (e.g., `stock.example.com`, `api.example.com`) and want selective CORS between them.
@@ -52,7 +55,7 @@ A CORS policy that trusts arbitrary subdomains and accepts `http://` origins can
 <p align="center"></i></p>
 <br><br>
 
-3. The application’s security was undermined by a CORS policy that whitelisted a trusted subdomain served over plain HTTP, creating a pathway for a protocol-downgrade attack:
+3. The application’s security was undermined by a CORS policy that whitelisted a trusted subdomain served over plain HTTP, which provided me with the opportunity to create a pathway for a protocol-downgrade attack:
    
 <img width="1359" height="727" alt="image" src="https://github.com/user-attachments/assets/f04cf0a6-db6a-4d41-9492-520dfa358727" />
 <p align="center"></i></p>
@@ -68,7 +71,7 @@ A CORS policy that trusts arbitrary subdomains and accepts `http://` origins can
 <p align="center"></i></p>
 <br><br>
 
-5. I crafted an XSS payload that fetched `/accountDetails` with credentials:
+5. I proceeded by crafting an XSS payload that fetched `/accountDetails` with credentials:
 
 The payload I used:
 
@@ -88,7 +91,7 @@ The payload I used:
 <p align="center"></i></p>
 <br><br>
 
-6. Hosting the payload on the exploit server and delivering it to the victim revealed the administrator's username, email, and API key within the access log panel, successfully completing the lab:
+6. I Hosted the payload on the exploit server and delivering it to the victim revealing the administrator's username, email, and API key within the access log panel, successfully confirming the vulnerability:
 
 <img width="1237" height="656" alt="image" src="https://github.com/user-attachments/assets/6a7c67e6-483d-4289-b571-1eaaea8d0416" />
 
