@@ -5,7 +5,7 @@
 # Table of Contents
 
 - [Overview](#overview)
-
+- [My "Aha" Moment](#my-aha-moment)
 - [Background](#root-cause-analysis)
 - [Impact](#impact)
 - [Summary of my findings](#summary-of-my-findings)
